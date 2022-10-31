@@ -188,7 +188,14 @@ class ExactNumber:
     o = other if isinstance(other, ExactNumber) else ExactNumber(other)
     a = abs(self)
     b = abs(o)
-
+    
+    # TODO: handling if `b > a`!
+    correction = ExactNumber(1)
+    if b > a:
+      expo = math.ceil(a.log10_approx() - b.log10_approx()) # finding N so that `10**N >= a/b`
+      a = ExactNumber(10**expo) * a
+      correction = ExactNumber(10**(-expo))
+      
     quot = ExactNumber._binary_method(a, b)
     rest = self - quot*b
     digits = quot.digits
@@ -200,7 +207,7 @@ class ExactNumber:
       if rest == 0:
         break
     
-    pn = ExactNumber(digits)
+    pn = ExactNumber(digits) * correction
     return -pn if (self.is_negative() ^ o.is_negative()) else pn
   
   def _halve(self) -> ExactNumber:
@@ -316,6 +323,9 @@ class ExactNumber:
         f"{a} should be >= 0   " if conda else ""
         f"{b} should be > 0    " if condb else ""
       )
+     
+    if b > a:
+      raise ArithmeticError
     
     one = ExactNumber(1)
     if a == b:
