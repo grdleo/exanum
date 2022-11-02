@@ -191,10 +191,10 @@ class ExactNumber:
     
     # TODO: handling if `b > a`!
     correction = ExactNumber(1)
+    expo = 1
     if b > a:
       expo = math.ceil(a.log10_approx() - b.log10_approx()) # finding N so that `10**N >= a/b`
-      a = ExactNumber(10**expo) * a
-      correction = ExactNumber(10**(-expo))
+      a =<< expo
       
     quot = ExactNumber._binary_method(a, b)
     rest = self - quot*b
@@ -207,7 +207,7 @@ class ExactNumber:
       if rest == 0:
         break
     
-    pn = ExactNumber(digits) * correction
+    pn = ExactNumber(digits) >> expo
     return -pn if (self.is_negative() ^ o.is_negative()) else pn
   
   def _halve(self) -> ExactNumber:
